@@ -35,35 +35,85 @@
   	      	$myName = addslashes( $_POST['name'] );
   	      	$myEmail = $_POST['email'];
   	      	$myPassword = $_POST['password'];
-  	      	$myVoterid = $_POST['voter_id'];
+  	      	$myPhone = $_POST['phone'];
             $myconfirmPassword = $_POST['confirmPassword'];
-          
-            if ($myName != null && $myEmail != null && $myVoterid != null && $myPassword != null && $myconfirmPassword != null) {
-              if ($myconfirmPassword == $myPassword) {
-                $newpassword = md5($myPassword);
-                $success = insertVoter($database, $myName, $myEmail, $myVoterid, $newpassword);
-                if($success){
-                  header("Location: ./login.php");
+            $myImage = $_FILES["img"]["name"];
+
+            $is_exist = selectVoterByExist($database, $myEmail);
+
+            if ($is_exist == null) {
+
+              if ($myName != null && $myEmail != null && $myPhone != null && $myPassword != null && $myconfirmPassword != null) {
+                if ($myconfirmPassword == $myPassword) {
+                  $newpassword = md5($myPassword);
+                  $success = false;
+  
+  
+                  if ($myImage != "") {
+                    // files handle
+                    $targetDirectory = "./asset/upload/";
+                    // get the file name
+                    $file_name = $_FILES['img']['name'];
+                    // get the mime type
+                    $file_mime_type = $_FILES['img']['type'];
+                    // get the file size
+                    $file_size = $_FILES['img']['size'];
+                    // get the file in temporary
+                    $file_tmp = $_FILES['img']['tmp_name'];
+                    // get the file extension, pathinfo($variable_name,FLAG)
+                    $extension = pathinfo($file_name,PATHINFO_EXTENSION);
+  
+                    //register as customer
+                    if ($extension =="jpg" || $extension =="png" || $extension =="jpeg"){
+                      move_uploaded_file($file_tmp,$targetDirectory.$file_name);
+                      $success = insertVoter($database, $myName, $myEmail, $myPhone, $newpassword, $file_name, 10);
+                       
+                     }else {
+                        $error = "Required JPG,PNG,GIF in profile picture field.";
+                     }
+  
+                   }else{
+  
+                    $file_name = "";
+                    $success = insertVoter($database, $myName, $myEmail, $myPhone, $newpassword, $file_name, 10);
+                           
+                     
+                   } 
+  
+                  if ($success) {
+                    // header("Location: ./login.php");
+                    echo '<script>window.location="./login.php"</script>';
+  
+                  
+                  }else {
+                    echo "Error! Something is worng.";
+                  }
+  
+  
                 } else {
-                  $error = "Something Worng!";
+                  $error = "* Passwords do not match!";
                 }
               } else {
-                $error = "* Passwords do not match!";
+                $error = "* All field are needed to fill!";
               }
+
             } else {
-              $error = "* All field are needed to fill!";
+              $error = "Account exist with this email!";
             }
+          
+            
             
   	      }
   	
         ?>
-            <form name="form1" method="post" action="./register.php" onSubmit="return registerValidate(this)">
+            <form name="form1" method="post" action="./register.php"  enctype="multipart/form-data" onSubmit="return registerValidate(this)">
                 <label for="error"  style="color: #f00; margin-bottom: 20px; font-weight: bold;"><?php echo $error; ?></label>
                 <label for="name" style="display: inline-block; margin-right: 105px">Name</label><input name="name" type="text" id="name" style="color: #000; display: inline-block;"><br><br>
                 <label for="email" style="display: inline-block; margin-right: 105px">Email</label><input name="email" type="email" id="email" style="color: #000; display: inline-block;"><br><br>
-                <label for="voter_id" style="display: inline-block; margin-right: 90px">Voter Id</label><input name="voter_id" type="text" id="voter_id" style="color: #000; display: inline-block;"><br><br>
+                <label for="voter_id" style="display: inline-block; margin-right: 103px">Phone</label><input name="phone" type="text" id="phone" style="color: #000; display: inline-block;"><br><br>
                 <label for="password" style="display: inline-block; margin-right: 80px">Password</label><input name="password" type="password" id="password" style="color: #000; display: inline-block;"><br><br>
                 <label for="confirmPassword" style="display: inline-block; margin-right: 20px">Confirm Password</label><input name="confirmPassword" type="password" id="confirmPassword" style="color: #000; display: inline-block;"><br><br>
+                <label for="img" style="display: inline-block; margin-right: 105px">Profile Picture <span style="color: #2f5;">* Optional</span></label><input name="img" type="file" id="img" style="color: #000; display: inline-block;"><br><br>
 
                 <input type="submit" name="submit" value="Register Account" style="color: #000;">
 

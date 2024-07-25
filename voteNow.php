@@ -5,23 +5,40 @@
     header("location: ./accessDenied.php");
   }
 
-  $stars = selectStarBySeason($database, "2");
+  $vid = $_GET["vid"];
+  $sid = $_GET["sid"];
+  $nos = $_GET["nos"];
 
-  var_dump($stars);
-  
-     if (isset($_POST['Submit']))
-     {
-    
-       $stars = addslashes( $_POST['stars'] ); 
+  $voter = selectVoterById($database, $vid);
+  // var_dump($voter);
 
-       echo $stars;
+  $exist_nos = $voter["nos"];
+
+  if($nos <= $exist_nos) {
+    $exist_nos -= $nos;
+    // echo $exist_nos;
+    $sql = "select * from stage where id='$sid';";
+    $stage = filterData($database, $sql)->fetch_assoc();
+    // var_dump($stage);
+    $total_nos = $stage["total_nov"];
+    $total_nos += $nos;
+    // echo($total_nos);
+
+    $id = uniqid();
+    // echo $id;
+    date_default_timezone_set('Asia/Yangon');
+    $bdate = date("Y-m-d H:i:s");
+    // echo $bdate;
     
-    
-       $result = $mysqli->query("SELECT * FROM tbCandidates WHERE candidate_position='$position'")
-       or die(" There are no records at the moment ... \n"); 
-    
-     }
-     else
-     // do something
+    insertVoting($database, $id, $sid, $vid, $bdate, $nos);
+    updateStarInVoter($database, $vid, $exist_nos);
+    updateStarInStage($database, $sid, $total_nos);
+
+    echo '<script>alert("You vote '.$nos.' stars to \''.$stage["song"].'\'. Thanks!")</script>';
+		echo '<script>window.location="./voter.php"</script>';
+  } else {
+    echo '<script>alert("You have '.$exist_nos.' stars! Insurficient voting. Buy stars now!")</script>';
+		echo '<script>window.location="./voter.php"</script>';
+  }
   
 ?>

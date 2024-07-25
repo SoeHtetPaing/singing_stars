@@ -11,11 +11,13 @@
     }
 ?>
 
+<img src="../img/bg-v1.jpg" alt="bg-photo" id="myVideo">
+
 <div class="wrapper row1" style="position: sticky; top:40px; z-index: 10;">
   <header id="header" class="hoc clear"> 
 
     <nav id="mainav">
-        <h5>Welcome back, Admin!</h5>
+        <h5>This content can access only for singingstars authoritries. &copy;2024 singingstars@s2 .co .ltd</h5>
     </nav>
 
      
@@ -49,7 +51,7 @@
 
       </div>
       <br><br>
-    <center>Return to <a href="http://localhost/pj_lease/singing_stars/index.php">Voter Panel</a></center>
+    <center>Return to <a href="http://localhost/pj_lease/singing_stars/index.php" style="color: #00f">Voter Panel</a></center>
 
     </form>
   </div>

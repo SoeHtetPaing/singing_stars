@@ -60,7 +60,10 @@
 
             if ($voter != null) {
                 $_SESSION['member_id'] = $voter['id'];
-				        header("location: ./voter.php");
+                $_SESSION['role'] = "voter";
+				        // header("location: ./voter.php");
+		        		echo '<script>window.location="./voter.php"</script>';
+
             } else {
 				echo "<span style='color: #f00; font-weight: bold;'>Wrong Username or Password!</span><br><br><a href=\"./login.php\">Try again?</a>";
 			}
